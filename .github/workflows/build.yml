@@ -1,0 +1,44 @@
+name: Test and package extension
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test
+
+      - name: Type-check
+        run: npm run build
+
+      - name: Build and package extension
+        run: npm run package:crx
+
+      - name: Upload extension packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: bizneo-reminders-${{ github.sha }}
+          path: |
+            release/bizneo-reminders.crx
+            release/bizneo-reminders.zip
+          if-no-files-found: error
+          retention-days: 30
