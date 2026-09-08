@@ -1,5 +1,5 @@
 {
-  "extensionName": { "message": "bizneo-reminders" },
+  "extensionName": { "message": "Bizneo Reminders" },
   "extensionDescription": { "message": "Configurable reminders for the Bizneo time clock." },
   "bizneo": { "message": "Bizneo" },
   "checking": { "message": "Checking..." },
