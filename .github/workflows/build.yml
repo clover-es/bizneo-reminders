@@ -37,7 +37,14 @@ jobs:
         run: |
           if [[ -n "$CRX_PRIVATE_KEY_B64" ]]; then
             mkdir -p release
-            printf '%s' "$CRX_PRIVATE_KEY_B64" | base64 --decode > release/bizneo-reminders.pem
+            if [[ "$CRX_PRIVATE_KEY_B64" == *"-----BEGIN"* ]]; then
+              printf '%s' "$CRX_PRIVATE_KEY_B64" > release/bizneo-reminders.pem
+            else
+              printf '%s' "$CRX_PRIVATE_KEY_B64" \
+                | tr -d '[:space:]' \
+                | base64 --decode > release/bizneo-reminders.pem
+            fi
+            grep -q -- '-----BEGIN .*PRIVATE KEY-----' release/bizneo-reminders.pem
             chmod 600 release/bizneo-reminders.pem
           fi
 
