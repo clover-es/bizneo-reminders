@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+release/
+
+# CRX signing keys
+*.pem
+
+# Logs and local reports
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+*.log
+
+# OS and editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Temporary captures and local secrets
+*.har
+captures/
+*.backup-*
+.env
+.env.*
+!.env.example

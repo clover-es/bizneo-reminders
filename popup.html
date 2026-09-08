@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bizneo Reminders</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <main>
+    <header><strong class="brand"><img src="res/icons/icon.svg" alt=""><span data-i18n="bizneo">Bizneo</span></strong><span id="connection" data-i18n="checking">Checking...</span></header>
+    <section class="status-panel">
+      <span id="status-icon" aria-hidden="true">●</span>
+      <div><h1 id="status" data-i18n="loading">Loading</h1><p id="logged">--</p></div>
+    </section>
+    <p id="message" role="status"></p>
+    <p id="configuration-status" class="configuration-status" hidden data-i18n="configurationIncomplete">Configuration incomplete</p>
+    <section class="actions" aria-label="Acciones del reloj">
+      <button id="session-action" data-action="checkIn">Iniciar</button>
+      <button id="break-action" data-action="pause">Pausar</button>
+    </section>
+    <button id="refresh" class="secondary" data-i18n="refresh">Refresh</button>
+    <button id="settings" class="secondary" data-i18n="openSettings">Settings</button>
+  </main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="configTitle">Bizneo Reminders</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main>
+    <h1 data-i18n="configTitle">Bizneo Reminders</h1>
+    <p data-i18n="configIntro">Configure the rules and save the JSON in the browser profile.</p>
+    <form id="settings-form">
+      <section class="settings-section">
+        <h2 data-i18n="accountCategory">Account</h2>
+        <p class="section-help" data-i18n="accountHelp">Connect the extension to your Bizneo employee account.</p>
+        <div class="field-grid">
+          <div class="field"><label for="tenant" data-i18n="tenantLabel">Tenant ID</label><div class="input-help"><input id="tenant" required><button type="button" class="help-button" data-help="tenant" aria-label="Help">?</button></div><small data-i18n="tenantHint">The subdomain before .bizneohr.com.</small></div>
+          <div class="field"><label for="userId" data-i18n="userIdLabel">User ID</label><div class="input-help"><input id="userId" required><button type="button" class="help-button" data-help="userId" aria-label="Help">?</button></div><small data-i18n="userIdHint">Your numeric employee ID in Bizneo.</small></div>
+          <div class="field"><label for="timeZone" data-i18n="timeZoneLabel">Time zone</label><select id="timeZone" required></select><small data-i18n="timeZoneHint">Example: Europe/Madrid.</small></div>
+        </div>
+      </section>
+      <section class="settings-section">
+        <h2 data-i18n="scheduleCategory">Work schedule</h2>
+        <p class="section-help" data-i18n="scheduleHelp">Define when a workday is expected.</p>
+        <div class="field-grid">
+          <div class="field"><label for="morningStartStart" data-i18n="morningStartLabel">Morning check-in window</label><div class="time-pair"><input id="morningStartStart" type="time" step="60"><span>-</span><input id="morningStartEnd" type="time" step="60"></div></div>
+          <div class="field"><label for="morningBreakStart" data-i18n="morningBreakLabel">Midday break window</label><div class="time-pair"><input id="morningBreakStart" type="time" step="60"><span>-</span><input id="morningBreakEnd" type="time" step="60"></div></div>
+          <div class="field"><label for="endOfDayStart" data-i18n="endOfDayLabel">End-of-day reminder from</label><input id="endOfDayStart" type="time" step="60"></div>
+          <div class="field"><label for="maximumWorkMinutes" data-i18n="maximumWorkLabel">Maximum work duration (minutes)</label><input id="maximumWorkMinutes" type="number" min="1"></div>
+        </div>
+        <fieldset><legend data-i18n="workingDaysLabel">Working days</legend><div class="days" id="workingDays"></div></fieldset>
+      </section>
+      <section class="settings-section">
+        <h2 data-i18n="remindersCategory">Reminders</h2>
+        <p class="section-help" data-i18n="remindersHelp">Choose which situations should trigger notifications.</p>
+        <label class="switch-row"><input id="enabledMorningStart" type="checkbox"><span data-i18n="enableMorningStart">Remind when the morning check-in is missing</span></label>
+        <label class="switch-row"><input id="enabledMorningBreak" type="checkbox"><span data-i18n="enableMorningBreak">Remind when the midday break has not started</span></label>
+        <label class="switch-row"><input id="enabledPauseOverdue" type="checkbox"><span data-i18n="enablePauseOverdue">Remind when the break is too long</span></label>
+        <label class="switch-row"><input id="enabledEndOfDay" type="checkbox"><span data-i18n="enableEndOfDay">Remind when the workday should finish</span></label>
+        <div class="field compact"><label for="pauseMaximumMinutes" data-i18n="pauseMaximumLabel">Maximum break duration (minutes)</label><input id="pauseMaximumMinutes" type="number" min="1"></div>
+      </section>
+      <section class="settings-section">
+        <h2 data-i18n="notificationsCategory">Notifications</h2>
+        <p class="section-help" data-i18n="notificationsHelp">The extension checks Bizneo at this interval while running in the background.</p>
+        <div class="field compact"><label for="reminderIntervalSeconds" data-i18n="intervalLabel">Check interval (seconds)</label><input id="reminderIntervalSeconds" type="number" min="30"><small data-i18n="intervalHint">Minimum 30 seconds. Edge may group very short alarms.</small></div>
+      </section>
+      <details class="advanced"><summary data-i18n="advancedCategory">Advanced JSON</summary><label for="config" data-i18n="configJsonLabel">JSON configuration</label><textarea id="config" spellcheck="false"></textarea></details>
+      <div class="actions"><button type="submit" id="save" data-i18n="save">Save</button><button type="button" id="check" data-i18n="checkNow">Check now</button><button type="button" id="import" data-i18n="importJson">Import JSON</button><button type="button" id="export" data-i18n="exportJson">Export JSON</button><input id="file" type="file" accept="application/json" hidden></div>
+    </form>
+    <output id="status" role="status"></output>
+    <pre id="diagnostics" aria-live="polite"></pre>
+  </main>
+  <dialog id="help-dialog"><button type="button" class="dialog-close" data-close-help aria-label="Close">×</button><h2 id="help-title"></h2><div id="help-content"></div><div id="help-images"></div></dialog>
+  <script type="module" src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,22 @@
+{
+  "name": "bizneo-reminders",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "bundle": "esbuild src/service-worker.ts src/options.ts src/popup.ts --bundle --format=esm --outdir=dist && cp manifest.json options.html options.css popup.html popup.css dist/ && rm -rf dist/_locales dist/res && cp -R _locales dist/ && cp -R res dist/",
+    "package:crx": "npm run bundle && mkdir -p release && crx3 -p release/bizneo-reminders.pem -o release/bizneo-reminders.crx -z release/bizneo-reminders.zip dist",
+    "test": "vitest run --environment jsdom",
+    "test:watch": "vitest",
+    "lint": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.270",
+    "@types/node": "^22.10.2",
+    "crx3": "^1.1.3",
+    "esbuild": "^0.24.0",
+    "jsdom": "^25.0.1",
+    "typescript": "^5.6.3",
+    "vitest": "^2.1.8"
+  }
+}

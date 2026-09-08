@@ -1,0 +1,20 @@
+:root { font-family: system-ui, sans-serif; color: #172121; background: #f4f1ea; }
+body { width: 320px; margin: 0; }
+main { padding: 18px; }
+header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+.brand { display: flex; align-items: center; gap: 7px; font-size: 17px; }
+.brand img { width: 24px; height: 24px; }
+header span { color: #65716e; font-size: 12px; }
+.status-panel { display: flex; gap: 12px; align-items: center; padding: 16px; border-radius: 8px; background: #fffdf8; border: 1px solid #d8dfd9; }
+#status-icon { color: #176b63; font-size: 20px; }
+#status-icon.paused { color: #c47719; }
+#status-icon.stopped { color: #65716e; }
+h1 { font-size: 18px; margin: 0; }
+p { margin: 4px 0 0; color: #65716e; font-size: 13px; }
+#message { min-height: 18px; margin: 12px 2px; color: #a51d2d; }
+.configuration-status { min-height: 0; margin: 8px 2px; color: #a66a00; font-weight: 700; }
+.actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+button { border: 0; border-radius: 5px; padding: 10px 8px; background: #176b63; color: white; cursor: pointer; font-weight: 600; }
+button:disabled { opacity: .45; cursor: default; }
+button.danger { background: #a33b35; }
+button.secondary { width: 100%; margin-top: 10px; background: transparent; color: #176b63; border: 1px solid #aebbb6; }
