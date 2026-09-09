@@ -9,6 +9,7 @@ export interface ParsedChrono {
   startedAt?: string;
   loggedMinutes?: number;
   scheduledMinutes?: number;
+  isExceeded?: boolean;
 }
 
 function firstMatch(pattern: RegExp, html: string): string | undefined {
@@ -19,6 +20,12 @@ function inputValue(name: string, html: string): string | undefined {
   const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   return firstMatch(new RegExp(`<input\\b(?=[^>]*\\bname=["']${escaped}["'])[^>]*\\bvalue=["']([^"']*)["']`, "i"), html)
     ?? firstMatch(new RegExp(`<input\\b(?=[^>]*\\bvalue=["']([^"']*)["'])[^>]*\\bname=["']${escaped}["']`, "i"), html);
+}
+
+function namedValue(name: string, html: string): string | undefined {
+  const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  return firstMatch(new RegExp(`<(?:input|button)\\b(?=[^>]*\\bname=["']${escaped}["'])[^>]*\\bvalue=["']([^"']*)["']`, "i"), html)
+    ?? firstMatch(new RegExp(`<(?:input|button)\\b(?=[^>]*\\bvalue=["']([^"']*)["'])[^>]*\\bname=["']${escaped}["']`, "i"), html);
 }
 
 function stripTags(value: string): string {
@@ -34,7 +41,7 @@ export function parseChrono(html: string): ParsedChrono {
   const wrapper = firstMatch(/<div\b[^>]*\bid=["']chronometer-wrapper["'][^>]*>([\s\S]*<\/div>)\s*$/i, html) ?? html;
   const form = firstMatch(/<form\b[^>]*>([\s\S]*?)<\/form>/i, wrapper) ?? wrapper;
   const formTag = firstMatch(/(<form\b[^>]*>)/i, wrapper) ?? "";
-  const chronoId = inputValue("pause", form);
+  const chronoId = namedValue("pause", form);
   const shiftId = inputValue("shift_id", form);
   const csrfToken = inputValue("_csrf_token", form);
   const formId = firstMatch(/\bid=["']([^"']+)["']/i, formTag);
@@ -44,10 +51,11 @@ export function parseChrono(html: string): ParsedChrono {
   const loggedMinutes = parseHM(dropdownValues[1])
     ?? parseHM(firstMatch(/<div\b[^>]*class=["'][^"']*\brow\b[^"']*\btime\b[^"']*["'][^>]*>[\s\S]*?<b[^>]*>([^<]+)<\/b>/i, form));
   const scheduledMinutes = parseHM(dropdownValues[0]);
+  const isResume = /data-gtm-action=["']chrono stop rest["']/i.test(form);
   const isStopped = /\bhx-post=["']\/chrono["']/i.test(formTag) || Boolean(inputValue("user_id", form) && !startedAt);
-  const isWorking = /<input\b(?=[^>]*\bname=["']kind["'])(?=[^>]*\btype=["']hidden["'])(?=[^>]*\bvalue=["']rest["'])/i.test(form)
-    || /<input\b(?=[^>]*\bname=["']kind["'])(?=[^>]*\bvalue=["']rest["'])(?=[^>]*\btype=["']hidden["'])/i.test(form);
-  const status: ChronoStatus = isStopped ? "stopped" : isWorking ? "working" : chronoId ? "paused" : "unknown";
+  const isWorking = !isResume && (namedValue("kind", form) === "rest" || /data-gtm-action=["']chrono pause["']/i.test(form));
+  const status: ChronoStatus = isStopped ? "stopped" : isWorking ? "working" : chronoId || isResume ? "paused" : "unknown";
+  const isExceeded = /exceeded|superad/i.test(firstMatch(/<div\b[^>]*id=["']dropdown-tooltip["'][^>]*>([\s\S]*?)<\/div>/i, form) ?? "");
 
-  return { status, chronoId, shiftId, csrfToken, formId, startedAt, loggedMinutes, scheduledMinutes };
+  return { status, chronoId, shiftId, csrfToken, formId, startedAt, loggedMinutes, scheduledMinutes, isExceeded: isExceeded || undefined };
 }

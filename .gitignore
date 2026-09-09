@@ -27,3 +27,6 @@ captures/
 .env
 .env.*
 !.env.example
+
+
+.hars

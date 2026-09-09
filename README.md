@@ -30,20 +30,24 @@
 - Reminds you when the morning check-in is missing.
 - Reminds you when the midday break has not started.
 - Reminds you when a break exceeds its configured limit.
-- Reminds you when the workday should end or the maximum duration is reached.
-- Repeats reminders at a configurable interval.
+- Reminds you when the clock is stopped, time was logged today, but workday time is still pending.
+- Reminds you when the workday should end (configured end-of-day time).
+- Reminds you when the scheduled workday duration is completed (calculated automatically from Bizneo).
+- Actionable notifications: clock action buttons (Start clock, Pause, Resume, Stop workday) and a Snooze button directly from the notification.
+- Snoozing silences reminders for the configured duration (5, 15, or 30 minutes) even across background checks. Clicking the notification opens Bizneo.
 - Runs in the background through browser alarms, without requiring a Bizneo tab to remain open.
 
 ### Configuration
 
 - **Account:** configure the Bizneo Tenant ID, User ID and IANA time zone.
-- **Working days:** choose which days of the week are treated as workdays.
-- **Morning check-in:** define the start and end of the window in which the morning check-in reminder is active.
+- **Morning check-in:** define the start time from which the morning check-in reminder is active.
 - **Midday break:** define the start and end of the window in which the break reminder is active.
-- **End of day:** configure when the end-of-day reminder starts and the maximum workday duration in minutes.
+- **End of day:** configure when the end-of-day reminder starts.
 - **Break duration:** set the maximum break length in minutes before a reminder is triggered.
+- **Stopped clock with pending workday:** configure the maximum stopped time before alerting and the minimum pending workday required.
 - **Reminder schedule:** set how often Bizneo is checked, with a minimum interval of 30 seconds.
-- **Individual alerts:** enable or disable reminders for the morning check-in, midday break, overdue break and end of day independently.
+- **Snooze duration:** choose snooze length (5, 15, or 30 minutes).
+- **Individual alerts:** enable or disable reminders for morning check-in, midday break, overdue break, stopped clock with pending workday, end of day, and scheduled workday completion independently.
 - **Advanced configuration:** import or export the complete configuration as JSON.
 
 <div align="center">
@@ -89,9 +93,9 @@ Browser behavior, extension policies and Bizneo's internal routes may change wit
 Open **Settings** from the popup or from the extension details page. The configuration is divided into:
 
 - **Account:** Tenant ID, User ID and IANA time zone.
-- **Work schedule:** morning and break windows, working days and maximum work duration.
-- **Reminders:** individual rule switches and the maximum break duration.
-- **Notifications:** check interval in seconds.
+- **Work schedule:** morning start time, midday break window, end-of-day start time, maximum break duration, and stopped clock thresholds.
+- **Reminders:** individual rule switches (`morningStart`, `morningBreak`, `pauseOverdue`, `endOfDay`, `maximumWork`, `stoppedPending`).
+- **Notifications:** check interval in seconds and snooze duration.
 - **Advanced JSON:** editing and exchanging the complete configuration.
 
 Minimal example:
@@ -102,18 +106,24 @@ Minimal example:
   "tenant": "your-tenant",
   "userId": "123456",
   "timeZone": "Europe/Madrid",
-  "reminderIntervalSeconds": 600,
-  "workingDays": [1, 2, 3, 4, 5],
-  "morningStart": { "start": "08:00", "end": "10:00" },
-  "morningBreak": { "start": "13:00", "end": "15:00" },
-  "pauseMaximumMinutes": 55,
-  "endOfDayStart": "17:00",
-  "maximumWorkMinutes": 480,
+  "reminderIntervalSeconds": 60,
+  "morningStart": "08:00",
+  "morningBreak": {
+    "start": "13:00",
+    "end": "15:00"
+  },
+  "pauseMaximumMinutes": 60,
+  "endOfDayStart": "18:00",
+  "snoozeMinutes": 15,
+  "stoppedMaximumMinutes": 15,
+  "stoppedPendingMinutes": 30,
   "enabled": {
     "morningStart": true,
     "morningBreak": true,
     "pauseOverdue": true,
-    "endOfDay": true
+    "endOfDay": true,
+    "maximumWork": true,
+    "stoppedPending": true
   }
 }
 ```

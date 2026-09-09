@@ -1,69 +1,405 @@
 {
-  "extensionName": { "message": "Bizneo Reminders" },
-  "extensionDescription": { "message": "Configurable reminders for the Bizneo time clock." },
-  "bizneo": { "message": "Bizneo" },
-  "checking": { "message": "Checking..." },
-  "connected": { "message": "Connected" },
-  "error": { "message": "Error" },
-  "loading": { "message": "Loading" },
-  "working": { "message": "Recording workday" },
-  "paused": { "message": "On break" },
-  "stopped": { "message": "Stopped" },
-  "unknown": { "message": "Unknown" },
-  "registeredTime": { "message": "Registered: $TIME$", "placeholders": { "time": { "content": "$1" } } },
-  "remainingTime": { "message": "Remaining: $TIME$", "placeholders": { "time": { "content": "$1" } } },
-  "start": { "message": "Start" },
-  "stop": { "message": "Stop" },
-  "pause": { "message": "Pause" },
-  "resume": { "message": "Resume" },
-  "refresh": { "message": "Refresh" },
-  "stopConfirmation": { "message": "Do you want to stop the workday?" },
-  "queryFailed": { "message": "Could not query Bizneo" },
-  "configTitle": { "message": "Bizneo Reminders" },
-  "configIntro": { "message": "Configure the rules and save the JSON in the browser profile." },
-  "configJsonLabel": { "message": "JSON configuration" },
-  "save": { "message": "Save" },
-  "checkNow": { "message": "Check now" },
-  "importJson": { "message": "Import JSON" },
-  "exportJson": { "message": "Export JSON" },
-  "configSaved": { "message": "Configuration saved." },
-  "checkingBizneo": { "message": "Checking Bizneo..." },
-  "checkComplete": { "message": "Check complete." },
-  "checkFailed": { "message": "Check failed: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
-  "unknownError": { "message": "unknown error" },
-  "jsonImported": { "message": "JSON imported. Press Save to apply it." },
-  "jsonExported": { "message": "JSON exported." },
-  "invalidStoredConfig": { "message": "Saved configuration is invalid: $ERROR$", "placeholders": { "error": { "content": "$1" } } },
-  "configObject": { "message": "Configuration must be a JSON object" },
-  "unsupportedConfigVersion": { "message": "Unsupported configuration version" },
-  "tenantUserRequired": { "message": "tenant and userId are required" },
-  "timeZoneRequired": { "message": "timeZone is required" },
-  "intervalInvalid": { "message": "reminderIntervalSeconds must be an integer of at least 30 seconds" },
-  "workingDaysInvalid": { "message": "workingDays must contain days from 0 to 6" },
-  "windowInvalid": { "message": "Time windows must use HH:MM" },
-  "endOfDayInvalid": { "message": "endOfDayStart must use HH:MM" },
-  "pauseMaximumInvalid": { "message": "pauseMaximumMinutes must be positive" },
-  "maximumWorkInvalid": { "message": "maximumWorkMinutes must be positive" },
-  "enabledInvalid": { "message": "enabled must contain booleans for every rule" },
-  "configBeforeQuery": { "message": "Configure tenant and userId before querying Bizneo" },
-  "notAuthenticated": { "message": "Bizneo session is not authenticated" },
-  "httpError": { "message": "Bizneo returned HTTP $STATUS$", "placeholders": { "status": { "content": "$1" } } },
-  "invalidAction": { "message": "Invalid time clock action" },
-  "checkInReminderTitle": { "message": "Check-in pending" },
-  "checkInReminderMessage": { "message": "You have not started the clock yet." },
-  "breakReminderTitle": { "message": "Break pending" },
-  "breakReminderMessage": { "message": "The midday break has not started yet." },
-  "pauseOverdueTitle": { "message": "Break exceeded" },
-  "pauseOverdueMessage": { "message": "The break is longer than $MINUTES$ minutes.", "placeholders": { "minutes": { "content": "$1" } } },
-  "endOfDayTitle": { "message": "End of workday" },
-  "endOfDayMessage": { "message": "Your workday is ready to be finished." },
-  "openBizneo": { "message": "Open Bizneo" }, "configurationIncomplete": { "message": "Configuration incomplete" }, "openSettings": { "message": "Settings" },
-  "accountCategory": { "message": "Account" }, "accountHelp": { "message": "Connect the extension to your Bizneo employee account." },
-  "tenantLabel": { "message": "Tenant ID" }, "tenantHint": { "message": "The subdomain before .bizneohr.com." }, "userIdLabel": { "message": "User ID" }, "userIdHint": { "message": "Your numeric employee ID in Bizneo." },
-  "timeZoneLabel": { "message": "Time zone" }, "timeZoneHint": { "message": "Example: Europe/Madrid." }, "scheduleCategory": { "message": "Work schedule" }, "scheduleHelp": { "message": "Define when a workday is expected." },
-  "morningStartLabel": { "message": "Morning check-in window" }, "morningBreakLabel": { "message": "Midday break window" }, "endOfDayLabel": { "message": "End-of-day reminder from" }, "maximumWorkLabel": { "message": "Maximum work duration (minutes)" }, "workingDaysLabel": { "message": "Working days" },
-  "remindersCategory": { "message": "Reminders" }, "remindersHelp": { "message": "Choose which situations should trigger notifications." }, "enableMorningStart": { "message": "Remind when the morning check-in is missing" }, "enableMorningBreak": { "message": "Remind when the midday break has not started" }, "enablePauseOverdue": { "message": "Remind when the break is too long" }, "enableEndOfDay": { "message": "Remind when the workday should finish" }, "pauseMaximumLabel": { "message": "Maximum break duration (minutes)" },
-  "notificationsCategory": { "message": "Notifications" }, "notificationsHelp": { "message": "The extension checks Bizneo at this interval while running in the background." }, "intervalLabel": { "message": "Check interval (seconds)" }, "intervalHint": { "message": "Minimum 30 seconds. Edge may group very short alarms." }, "advancedCategory": { "message": "Advanced JSON" },
-  "day_sun": { "message": "Sun" }, "day_mon": { "message": "Mon" }, "day_tue": { "message": "Tue" }, "day_wed": { "message": "Wed" }, "day_thu": { "message": "Thu" }, "day_fri": { "message": "Fri" }, "day_sat": { "message": "Sat" },
-  "tenantHelpTitle": { "message": "Finding the Tenant ID" }, "userIdHelpTitle": { "message": "Finding the User ID" }, "tenantHelpIntro": { "message": "Open Bizneo in Edge and use your profile menu." }, "userIdHelpIntro": { "message": "Open your Bizneo profile to see the employee identifier." }, "helpStepProfile": { "message": "Open the profile menu in the top-right corner." }, "helpStepIdentity": { "message": "Choose My profile." }, "helpStepTenant": { "message": "The tenant ID is the subdomain in the address bar, before .bizneohr.com." }, "helpStepUserId": { "message": "The User ID is shown next to ID in Bizneo on the profile page." }
+  "extensionName": {
+    "message": "Bizneo Reminders"
+  },
+  "extensionDescription": {
+    "message": "Configurable reminders for the Bizneo time clock."
+  },
+  "bizneo": {
+    "message": "Bizneo"
+  },
+  "checking": {
+    "message": "Checking..."
+  },
+  "connected": {
+    "message": "Connected"
+  },
+  "error": {
+    "message": "Error"
+  },
+  "loading": {
+    "message": "Loading"
+  },
+  "working": {
+    "message": "Recording workday"
+  },
+  "paused": {
+    "message": "On break"
+  },
+  "stopped": {
+    "message": "Stopped"
+  },
+  "unknown": {
+    "message": "Unknown"
+  },
+  "registeredTime": {
+    "message": "Registered: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "remainingTime": {
+    "message": "Remaining: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "start": {
+    "message": "Start"
+  },
+  "stop": {
+    "message": "Stop"
+  },
+  "pause": {
+    "message": "Pause"
+  },
+  "resume": {
+    "message": "Resume"
+  },
+  "refresh": {
+    "message": "Refresh"
+  },
+  "stopConfirmation": {
+    "message": "Do you want to stop the workday?"
+  },
+  "queryFailed": {
+    "message": "Could not query Bizneo"
+  },
+  "configTitle": {
+    "message": "Bizneo Reminders"
+  },
+  "configIntro": {
+    "message": "Configure the rules and save the JSON in the browser profile."
+  },
+  "configJsonLabel": {
+    "message": "JSON configuration"
+  },
+  "save": {
+    "message": "Save"
+  },
+  "checkNow": {
+    "message": "Check now"
+  },
+  "importJson": {
+    "message": "Import JSON"
+  },
+  "exportJson": {
+    "message": "Export JSON"
+  },
+  "configSaved": {
+    "message": "Configuration saved."
+  },
+  "checkingBizneo": {
+    "message": "Checking Bizneo..."
+  },
+  "checkComplete": {
+    "message": "Check complete."
+  },
+  "checkFailed": {
+    "message": "Check failed: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "unknownError": {
+    "message": "unknown error"
+  },
+  "jsonImported": {
+    "message": "JSON imported. Press Save to apply it."
+  },
+  "jsonExported": {
+    "message": "JSON exported."
+  },
+  "invalidStoredConfig": {
+    "message": "Saved configuration is invalid: $ERROR$",
+    "placeholders": {
+      "error": {
+        "content": "$1"
+      }
+    }
+  },
+  "configObject": {
+    "message": "Configuration must be a JSON object"
+  },
+  "unsupportedConfigVersion": {
+    "message": "Unsupported configuration version"
+  },
+  "tenantUserRequired": {
+    "message": "tenant and userId are required"
+  },
+  "timeZoneRequired": {
+    "message": "timeZone is required"
+  },
+  "intervalInvalid": {
+    "message": "reminderIntervalSeconds must be an integer of at least 30 seconds"
+  },
+  "workingDaysInvalid": {
+    "message": "workingDays must contain days from 0 to 6"
+  },
+  "windowInvalid": {
+    "message": "Time windows must use HH:MM"
+  },
+  "endOfDayInvalid": {
+    "message": "endOfDayStart must use HH:MM"
+  },
+  "pauseMaximumInvalid": {
+    "message": "pauseMaximumMinutes must be positive"
+  },
+  "maximumWorkInvalid": {
+    "message": "maximumWorkMinutes must be positive"
+  },
+  "enabledInvalid": {
+    "message": "enabled must contain booleans for every rule"
+  },
+  "configBeforeQuery": {
+    "message": "Configure tenant and userId before querying Bizneo"
+  },
+  "notAuthenticated": {
+    "message": "Bizneo session is not authenticated"
+  },
+  "httpError": {
+    "message": "Bizneo returned HTTP $STATUS$",
+    "placeholders": {
+      "status": {
+        "content": "$1"
+      }
+    }
+  },
+  "invalidAction": {
+    "message": "Invalid time clock action"
+  },
+  "noPauseConfigured": {
+    "message": "No pause options are available in Bizneo"
+  },
+  "checkInReminderTitle": {
+    "message": "Check-in pending"
+  },
+  "checkInReminderMessage": {
+    "message": "You have not started the clock yet."
+  },
+  "breakReminderTitle": {
+    "message": "Break pending"
+  },
+  "breakReminderMessage": {
+    "message": "The midday break has not started yet."
+  },
+  "pauseOverdueTitle": {
+    "message": "Break exceeded"
+  },
+  "pauseOverdueMessage": {
+    "message": "The break is longer than $MINUTES$ minutes.",
+    "placeholders": {
+      "minutes": {
+        "content": "$1"
+      }
+    }
+  },
+  "endOfDayTitle": {
+    "message": "End of workday"
+  },
+  "endOfDayMessage": {
+    "message": "Your workday is ready to be finished."
+  },
+  "maximumWorkTitle": {
+    "message": "Workday completed"
+  },
+  "maximumWorkMessage": {
+    "message": "You have reached your scheduled workday duration."
+  },
+  "stoppedPendingTitle": {
+    "message": "Workday pending"
+  },
+  "stoppedPendingMessage": {
+    "message": "The clock is stopped and you still have $TIME$ of pending workday.",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "snoozeButton": {
+    "message": "Snooze ($MINUTES$m)",
+    "placeholders": {
+      "minutes": {
+        "content": "$1"
+      }
+    }
+  },
+  "snoozeDurationLabel": {
+    "message": "Snooze duration"
+  },
+  "snoozeDurationHint": {
+    "message": "Duration for which reminders are silenced when clicking Snooze on a notification."
+  },
+  "actionCheckIn": {
+    "message": "Start clock"
+  },
+  "actionPause": {
+    "message": "Pause"
+  },
+  "actionResume": {
+    "message": "Resume"
+  },
+  "actionCheckOut": {
+    "message": "Stop workday"
+  },
+  "openBizneo": {
+    "message": "Open Bizneo"
+  },
+  "configurationIncomplete": {
+    "message": "Configuration incomplete"
+  },
+  "openSettings": {
+    "message": "Settings"
+  },
+  "accountCategory": {
+    "message": "Account"
+  },
+  "accountHelp": {
+    "message": "Connect the extension to your Bizneo employee account."
+  },
+  "tenantLabel": {
+    "message": "Tenant ID"
+  },
+  "tenantHint": {
+    "message": "The subdomain before .bizneohr.com."
+  },
+  "userIdLabel": {
+    "message": "User ID"
+  },
+  "userIdHint": {
+    "message": "Your numeric employee ID in Bizneo."
+  },
+  "timeZoneLabel": {
+    "message": "Time zone"
+  },
+  "timeZoneHint": {
+    "message": "Example: Europe/Madrid."
+  },
+  "scheduleCategory": {
+    "message": "Work schedule"
+  },
+  "scheduleHelp": {
+    "message": "Define when a workday is expected."
+  },
+  "morningStartLabel": {
+    "message": "Morning check-in from"
+  },
+  "morningBreakLabel": {
+    "message": "Midday break window"
+  },
+  "endOfDayLabel": {
+    "message": "End-of-day reminder from"
+  },
+  "maximumWorkLabel": {
+    "message": "Maximum work duration (minutes)"
+  },
+  "workingDaysLabel": {
+    "message": "Working days"
+  },
+  "stoppedMaximumLabel": {
+    "message": "Maximum stopped duration (minutes)"
+  },
+  "stoppedMaximumHint": {
+    "message": "Minutes elapsed with the clock stopped before reminding."
+  },
+  "stoppedPendingLabel": {
+    "message": "Minimum pending workday (minutes)"
+  },
+  "stoppedPendingHint": {
+    "message": "Only remind if at least this many minutes of workday are pending."
+  },
+  "remindersCategory": {
+    "message": "Reminders"
+  },
+  "remindersHelp": {
+    "message": "Choose which situations should trigger notifications."
+  },
+  "enableMorningStart": {
+    "message": "Remind when the morning check-in is missing"
+  },
+  "enableMorningBreak": {
+    "message": "Remind when the break has not started"
+  },
+  "enablePauseOverdue": {
+    "message": "Remind when the break is too long"
+  },
+  "enableEndOfDay": {
+    "message": "Remind when the time configured as end of day has passed"
+  },
+  "enableMaximumWork": {
+    "message": "Remind when scheduled workday duration is completed"
+  },
+  "enableStoppedPending": {
+    "message": "Remind when the clock is stopped with pending workday time"
+  },
+  "pauseMaximumLabel": {
+    "message": "Maximum break duration (minutes)"
+  },
+  "notificationsCategory": {
+    "message": "Notifications"
+  },
+  "notificationsHelp": {
+    "message": "The extension checks Bizneo at this interval while running in the background."
+  },
+  "intervalLabel": {
+    "message": "Check interval (seconds)"
+  },
+  "intervalHint": {
+    "message": "Minimum 30 seconds. Edge may group very short alarms."
+  },
+  "advancedCategory": {
+    "message": "Advanced JSON"
+  },
+  "day_sun": {
+    "message": "Sun"
+  },
+  "day_mon": {
+    "message": "Mon"
+  },
+  "day_tue": {
+    "message": "Tue"
+  },
+  "day_wed": {
+    "message": "Wed"
+  },
+  "day_thu": {
+    "message": "Thu"
+  },
+  "day_fri": {
+    "message": "Fri"
+  },
+  "day_sat": {
+    "message": "Sat"
+  },
+  "tenantHelpTitle": {
+    "message": "Finding the Tenant ID"
+  },
+  "userIdHelpTitle": {
+    "message": "Finding the User ID"
+  },
+  "tenantHelpIntro": {
+    "message": "Open Bizneo in Edge and use your profile menu."
+  },
+  "userIdHelpIntro": {
+    "message": "Open your Bizneo profile to see the employee identifier."
+  },
+  "helpStepProfile": {
+    "message": "Open the profile menu in the top-right corner."
+  },
+  "helpStepIdentity": {
+    "message": "Choose My profile."
+  },
+  "helpStepTenant": {
+    "message": "The tenant ID is the subdomain in the address bar, before .bizneohr.com."
+  },
+  "helpStepUserId": {
+    "message": "The User ID is shown next to ID in Bizneo on the profile page."
+  }
 }

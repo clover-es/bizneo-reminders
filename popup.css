@@ -18,3 +18,5 @@ button { border: 0; border-radius: 5px; padding: 10px 8px; background: #176b63; 
 button:disabled { opacity: .45; cursor: default; }
 button.danger { background: #a33b35; }
 button.secondary { width: 100%; margin-top: 10px; background: transparent; color: #176b63; border: 1px solid #aebbb6; }
+.secondary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+.secondary-grid button.secondary { margin-top: 0; }

@@ -12,10 +12,15 @@ const englishFallback: Record<string, string> = {
   invalidStoredConfig: "Saved configuration is invalid: $ERROR$", configObject: "Configuration must be a JSON object", unsupportedConfigVersion: "Unsupported configuration version",
   tenantUserRequired: "tenant and userId are required", timeZoneRequired: "timeZone is required", intervalInvalid: "reminderIntervalSeconds must be an integer of at least 30 seconds",
   workingDaysInvalid: "workingDays must contain days from 0 to 6", windowInvalid: "Time windows must use HH:MM", endOfDayInvalid: "endOfDayStart must use HH:MM",
-  pauseMaximumInvalid: "pauseMaximumMinutes must be positive", maximumWorkInvalid: "maximumWorkMinutes must be positive", enabledInvalid: "enabled must contain booleans for every rule",
-  configBeforeQuery: "Configure tenant and userId before querying Bizneo", notAuthenticated: "Bizneo session is not authenticated", httpError: "Bizneo returned HTTP $STATUS$", invalidAction: "Invalid time clock action",
+  pauseMaximumInvalid: "pauseMaximumMinutes must be positive", enabledInvalid: "enabled must contain booleans for every rule",
+  configBeforeQuery: "Configure tenant and userId before querying Bizneo", notAuthenticated: "Bizneo session is not authenticated", httpError: "Bizneo returned HTTP $STATUS$", invalidAction: "Invalid time clock action", noPauseConfigured: "No pause options are available in Bizneo",
   checkInReminderTitle: "Check-in pending", checkInReminderMessage: "You have not started the clock yet.", breakReminderTitle: "Break pending", breakReminderMessage: "The midday break has not started yet.",
-  pauseOverdueTitle: "Break exceeded", pauseOverdueMessage: "The break is longer than $MINUTES$ minutes.", endOfDayTitle: "End of workday", endOfDayMessage: "Your workday is ready to be finished.", openBizneo: "Open Bizneo"
+  pauseOverdueTitle: "Break exceeded", pauseOverdueMessage: "The break is longer than $MINUTES$ minutes.", endOfDayTitle: "End of workday", endOfDayMessage: "Your workday is ready to be finished.",
+  maximumWorkTitle: "Workday completed", maximumWorkMessage: "You have reached your scheduled workday duration.",
+  stoppedPendingTitle: "Workday pending", stoppedPendingMessage: "The clock is stopped and you still have $TIME$ of pending workday.",
+  snoozeButton: "Snooze ($MINUTES$m)", snoozeDurationHint: "Duration for which reminders are silenced when clicking Snooze on a notification.",
+  actionCheckIn: "Start clock", actionPause: "Pause", actionResume: "Resume", actionCheckOut: "Stop workday",
+  openBizneo: "Open Bizneo"
 };
 
 function substitute(value: string, substitutions?: string | string[]): string {

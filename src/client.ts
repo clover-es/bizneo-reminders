@@ -10,7 +10,17 @@ export class BizneoClient {
       throw new Error(t("configBeforeQuery"));
     }
     const url = `https://${this.config.tenant}.bizneohr.com/chrono/${encodeURIComponent(this.config.userId)}/hub_chrono`;
-    const response = await fetch(url, { credentials: "include", cache: "no-store" });
+    const response = await fetch(url, {
+      credentials: "include",
+      cache: "no-store",
+      headers: {
+        "Accept": "*/*",
+        "HX-Current-URL": `https://${this.config.tenant}.bizneohr.com/`,
+        "HX-Request": "true",
+        "HX-Target": "chronometer-wrapper",
+        "HX-Trigger": "chronometer-wrapper"
+      }
+    });
     if (!response.ok || response.redirected || /\/users\/sign_in|\/welcome/.test(response.url)) {
       throw new Error(response.status === 401 || response.status === 403 ? t("notAuthenticated") : t("httpError", String(response.status)));
     }
@@ -39,20 +49,25 @@ export class BizneoClient {
       body.set("user_id", userId);
       body.set("kind", "working_time");
     } else if (action === "pause") {
+      if (!state.chronoId) {
+        throw new Error(t("noPauseConfigured"));
+      }
       body.set("_method", "put");
       body.set("kind", "rest");
       body.set("comment", "");
-      body.set("pause", state.chronoId ?? "");
+      body.set("pause", state.chronoId);
     } else if (action === "resume") {
       body.set("_method", "put");
       body.set("kind", "working_time");
       body.set("comment", "");
-      body.set("pause", state.chronoId ?? "");
+      if (state.chronoId) body.set("pause", state.chronoId);
     } else {
       body.set("_method", "put");
-      body.set("kind", "working_time");
+      body.set("kind", "rest");
       body.set("comment", "");
     }
+
+    const trigger = state.formId ?? (action === "resume" ? "chrono-form-hub_chrono" : "chrono-form-default_chrono");
 
     const response = await fetch(`https://${this.config.tenant}.bizneohr.com${path}`, {
       method,
@@ -61,13 +76,15 @@ export class BizneoClient {
       headers: {
         "Accept": "*/*",
         "Content-Type": "application/x-www-form-urlencoded",
+        "HX-Current-URL": `https://${this.config.tenant}.bizneohr.com/`,
         "HX-Request": "true",
         "HX-Target": "chronometer-wrapper",
+        "HX-Trigger": trigger,
         ...(csrf ? { "X-CSRF-Token": csrf } : {})
       },
       body
     });
-    if (!response.ok) throw new Error(`Bizneo devolvió HTTP ${response.status}`);
+    if (!response.ok) throw new Error(t("httpError", String(response.status)));
     return parseChrono(await response.text());
   }
 }

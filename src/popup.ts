@@ -68,6 +68,15 @@ buttons.forEach(button => button.addEventListener("click", () => {
   if (action === "checkOut" && !window.confirm(t("stopConfirmation"))) return;
   void request(action);
 }));
+document.querySelector("#open-bizneo")!.addEventListener("click", async () => {
+  const stored = (await chrome.storage.local.get("reminderConfig"))["reminderConfig"];
+  const tenant = stored?.tenant?.trim();
+  if (tenant) {
+    await chrome.tabs.create({ url: `https://${tenant}.bizneohr.com/` });
+  } else {
+    await chrome.runtime.openOptionsPage();
+  }
+});
 document.querySelector("#refresh")!.addEventListener("click", () => { void request(); });
 document.querySelector("#settings")!.addEventListener("click", () => { void chrome.runtime.openOptionsPage(); });
 void request();

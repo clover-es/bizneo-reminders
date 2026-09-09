@@ -2,12 +2,15 @@ import type { ReminderConfig, TimeWindow } from "./config.js";
 import { t } from "./i18n.js";
 
 export type ChronoStatus = "stopped" | "working" | "paused" | "unknown";
-export type ReminderRule = "morningStart" | "morningBreak" | "pauseOverdue" | "endOfDay";
+export type ReminderRule = "morningStart" | "morningBreak" | "pauseOverdue" | "endOfDay" | "maximumWork" | "stoppedPending";
 
 export interface ReminderSnapshot {
   status: ChronoStatus;
   loggedMinutes: number;
+  scheduledMinutes?: number;
+  isExceeded?: boolean;
   pauseStartedAt?: Date;
+  stoppedStartedAt?: Date;
   isDayOff?: boolean;
 }
 
@@ -29,11 +32,6 @@ function minutesSinceMidnight(date: Date, timeZone: string): number {
   return hour * 60 + minute;
 }
 
-function weekday(date: Date, timeZone: string): number {
-  const name = new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short" }).format(date);
-  return ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].indexOf(name);
-}
-
 function timeValue(time: string): number {
   const [hour = 0, minute = 0] = time.split(":").map(Number);
   return hour * 60 + minute;
@@ -45,12 +43,18 @@ function insideWindow(now: number, window: TimeWindow): boolean {
   return now >= start && now <= end;
 }
 
+function formatHM(minutes: number): string {
+  const h = Math.floor(Math.max(0, minutes) / 60);
+  const m = Math.max(0, minutes) % 60;
+  return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`;
+}
+
 export function evaluateReminders(config: ReminderConfig, snapshot: ReminderSnapshot, now: Date): ActiveReminder[] {
-  if (snapshot.isDayOff || !config.workingDays.includes(weekday(now, config.timeZone))) return [];
+  if (snapshot.isDayOff || (snapshot.scheduledMinutes !== undefined && snapshot.scheduledMinutes <= 0)) return [];
   const currentMinutes = minutesSinceMidnight(now, config.timeZone);
   const reminders: ActiveReminder[] = [];
 
-  if (config.enabled.morningStart && insideWindow(currentMinutes, config.morningStart)
+  if (config.enabled.morningStart && currentMinutes >= timeValue(config.morningStart)
       && snapshot.status === "stopped" && snapshot.loggedMinutes === 0) {
     reminders.push({ rule: "morningStart", title: t("checkInReminderTitle"), message: t("checkInReminderMessage") });
   }
@@ -62,11 +66,29 @@ export function evaluateReminders(config: ReminderConfig, snapshot: ReminderSnap
       && (now.getTime() - snapshot.pauseStartedAt.getTime()) / 60000 > config.pauseMaximumMinutes) {
     reminders.push({ rule: "pauseOverdue", title: t("pauseOverdueTitle"), message: t("pauseOverdueMessage", String(config.pauseMaximumMinutes)) });
   }
-  if (config.enabled.endOfDay && (currentMinutes >= timeValue(config.endOfDayStart)
-      || snapshot.loggedMinutes >= config.maximumWorkMinutes)
+  if (config.enabled.endOfDay && currentMinutes >= timeValue(config.endOfDayStart)
       && (snapshot.status === "working" || snapshot.status === "paused")
       ) {
     reminders.push({ rule: "endOfDay", title: t("endOfDayTitle"), message: t("endOfDayMessage") });
+  }
+  const reachedScheduled = Boolean(snapshot.isExceeded)
+    || (snapshot.scheduledMinutes !== undefined && snapshot.scheduledMinutes > 0 && snapshot.loggedMinutes >= snapshot.scheduledMinutes);
+  if (config.enabled.maximumWork && reachedScheduled
+      && (snapshot.status === "working" || snapshot.status === "paused")
+      ) {
+    reminders.push({ rule: "maximumWork", title: t("maximumWorkTitle"), message: t("maximumWorkMessage") });
+  }
+  const pendingMinutes = (snapshot.scheduledMinutes !== undefined && snapshot.scheduledMinutes > 0)
+    ? snapshot.scheduledMinutes - snapshot.loggedMinutes
+    : 0;
+  if (config.enabled.stoppedPending
+      && snapshot.status === "stopped"
+      && snapshot.loggedMinutes > 0
+      && !snapshot.isExceeded
+      && pendingMinutes >= config.stoppedPendingMinutes
+      && snapshot.stoppedStartedAt
+      && (now.getTime() - snapshot.stoppedStartedAt.getTime()) / 60000 > config.stoppedMaximumMinutes) {
+    reminders.push({ rule: "stoppedPending", title: t("stoppedPendingTitle"), message: t("stoppedPendingMessage", formatHM(pendingMinutes)) });
   }
   return reminders;
 }
