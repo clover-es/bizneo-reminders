@@ -37,6 +37,14 @@ function parseHM(value: string | undefined): number | undefined {
   return match ? Number(match[1]) * 60 + Number(match[2]) : undefined;
 }
 
+export function parseBizneoDate(str: string | undefined): Date | undefined {
+  if (!str) return undefined;
+  const match = str.trim().match(/^(\d{4})-(\d{1,2})-(\d{1,2})(?:[T\s](\d{1,2}):(\d{1,2})(?::(\d{1,2}))?)?/);
+  if (!match) return undefined;
+  const [, y, m, d, h = "0", min = "0", s = "0"] = match;
+  return new Date(Number(y), Number(m) - 1, Number(d), Number(h), Number(min), Number(s));
+}
+
 export function parseChrono(html: string): ParsedChrono {
   const wrapper = firstMatch(/<div\b[^>]*\bid=["']chronometer-wrapper["'][^>]*>([\s\S]*<\/div>)\s*$/i, html) ?? html;
   const form = firstMatch(/<form\b[^>]*>([\s\S]*?)<\/form>/i, wrapper) ?? wrapper;

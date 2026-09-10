@@ -12,6 +12,7 @@ export interface ReminderSnapshot {
   pauseStartedAt?: Date;
   stoppedStartedAt?: Date;
   isDayOff?: boolean;
+  breakDoneToday?: boolean;
 }
 
 export interface ActiveReminder {
@@ -20,7 +21,7 @@ export interface ActiveReminder {
   message: string;
 }
 
-function minutesSinceMidnight(date: Date, timeZone: string): number {
+export function minutesSinceMidnight(date: Date, timeZone: string): number {
   const parts = new Intl.DateTimeFormat("en-GB", {
     timeZone,
     hour: "2-digit",
@@ -32,12 +33,21 @@ function minutesSinceMidnight(date: Date, timeZone: string): number {
   return hour * 60 + minute;
 }
 
-function timeValue(time: string): number {
+export function getLocalDateString(date: Date, timeZone: string): string {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(date);
+}
+
+export function timeValue(time: string): number {
   const [hour = 0, minute = 0] = time.split(":").map(Number);
   return hour * 60 + minute;
 }
 
-function insideWindow(now: number, window: TimeWindow): boolean {
+export function insideWindow(now: number, window: TimeWindow): boolean {
   const start = timeValue(window.start);
   const end = timeValue(window.end);
   return now >= start && now <= end;
@@ -59,7 +69,7 @@ export function evaluateReminders(config: ReminderConfig, snapshot: ReminderSnap
     reminders.push({ rule: "morningStart", title: t("checkInReminderTitle"), message: t("checkInReminderMessage") });
   }
   if (config.enabled.morningBreak && insideWindow(currentMinutes, config.morningBreak)
-      && snapshot.status === "working") {
+      && snapshot.status === "working" && !snapshot.breakDoneToday) {
     reminders.push({ rule: "morningBreak", title: t("breakReminderTitle"), message: t("breakReminderMessage") });
   }
   if (config.enabled.pauseOverdue && snapshot.status === "paused" && snapshot.pauseStartedAt

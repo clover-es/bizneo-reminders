@@ -1,8 +1,15 @@
 import { defaultConfig, validateConfig, type ReminderConfig } from "./config.js";
 import { BizneoClient } from "./client.js";
-import type { ParsedChrono } from "./parser/chrono.js";
+import { parseBizneoDate, type ParsedChrono } from "./parser/chrono.js";
 import { t } from "./i18n.js";
-import { evaluateReminders, type ReminderRule, type ReminderSnapshot } from "./reminders.js";
+import {
+  evaluateReminders,
+  getLocalDateString,
+  minutesSinceMidnight,
+  timeValue,
+  type ReminderRule,
+  type ReminderSnapshot
+} from "./reminders.js";
 
 const ALARM_NAME = "bizneo-reminder-check";
 const STORAGE_KEY = "reminderConfig";
@@ -11,6 +18,7 @@ const STATE_KEY = "reminderRuntime";
 interface RuntimeState {
   pauseStartedAt?: string;
   stoppedStartedAt?: string;
+  breakDoneDate?: string;
   lastNotified?: Partial<Record<string, string>>;
   snoozedUntil?: Partial<Record<string, string>>;
   lastCheckAt?: string;
@@ -114,6 +122,11 @@ async function checkReminders(force = false): Promise<CheckResult> {
   try {
     const chrono = await new BizneoClient(config).fetchChrono();
     const now = new Date();
+    const todayStr = getLocalDateString(now, config.timeZone);
+    const currentMinutes = minutesSinceMidnight(now, config.timeZone);
+    const breakStart = timeValue(config.morningBreak.start);
+    const breakEnd = timeValue(config.morningBreak.end);
+
     if (chrono.status === "paused" && !runtime.pauseStartedAt) runtime.pauseStartedAt = now.toISOString();
     if (chrono.status !== "paused") delete runtime.pauseStartedAt;
     if (chrono.status === "stopped" && (chrono.loggedMinutes ?? 0) > 0) {
@@ -121,13 +134,36 @@ async function checkReminders(force = false): Promise<CheckResult> {
     } else {
       delete runtime.stoppedStartedAt;
     }
+
+    // Mark midday break as done if paused within or around the break window
+    if (chrono.status === "paused" && currentMinutes >= breakStart - 60 && currentMinutes <= breakEnd + 30) {
+      runtime.breakDoneDate = todayStr;
+    }
+
+    let breakDoneToday = runtime.breakDoneDate === todayStr;
+
+    // Detect if resumed working after a break (prior logged time + new segment started around/after break window)
+    if (!breakDoneToday && chrono.status === "working" && chrono.startedAt && (chrono.loggedMinutes ?? 0) > 0) {
+      const startedDate = parseBizneoDate(chrono.startedAt);
+      if (startedDate) {
+        const startedMinutes = minutesSinceMidnight(startedDate, config.timeZone);
+        const elapsedMinutes = Math.max(0, (now.getTime() - startedDate.getTime()) / 60000);
+        const priorLogged = (chrono.loggedMinutes ?? 0) - elapsedMinutes;
+        if (priorLogged >= 15 && startedMinutes >= breakStart - 30 && startedMinutes <= breakEnd + 60) {
+          breakDoneToday = true;
+          runtime.breakDoneDate = todayStr;
+        }
+      }
+    }
+
     const snapshot: ReminderSnapshot = {
       status: chrono.status,
       loggedMinutes: chrono.loggedMinutes ?? 0,
       scheduledMinutes: chrono.scheduledMinutes,
       isExceeded: chrono.isExceeded,
       pauseStartedAt: runtime.pauseStartedAt ? new Date(runtime.pauseStartedAt) : undefined,
-      stoppedStartedAt: runtime.stoppedStartedAt ? new Date(runtime.stoppedStartedAt) : undefined
+      stoppedStartedAt: runtime.stoppedStartedAt ? new Date(runtime.stoppedStartedAt) : undefined,
+      breakDoneToday
     };
     const active = evaluateReminders(config, snapshot, now);
     const nextNotifications = { ...runtime.lastNotified };
@@ -186,6 +222,7 @@ async function checkReminders(force = false): Promise<CheckResult> {
     await chrome.storage.local.set({ [STATE_KEY]: {
       pauseStartedAt: runtime.pauseStartedAt,
       stoppedStartedAt: runtime.stoppedStartedAt,
+      breakDoneDate: runtime.breakDoneDate,
       lastNotified: nextNotifications,
       snoozedUntil: nextSnoozed,
       lastCheckAt: result.checkedAt,
@@ -218,6 +255,11 @@ chrome.notifications.onButtonClicked.addListener(async (notificationId, buttonIn
   const config = await loadConfig();
 
   if (buttonIndex === 0) {
+    if (rule === "morningBreak") {
+      const runtime = await loadRuntime();
+      runtime.breakDoneDate = getLocalDateString(new Date(), config.timeZone);
+      await chrome.storage.local.set({ [STATE_KEY]: runtime });
+    }
     const action = ruleToAction(rule);
     if (action) {
       try {
@@ -260,6 +302,20 @@ chrome.runtime.onMessage.addListener((message: { type?: string; action?: string 
     if (!action) {
       sendResponse({ ok: false, error: t("invalidAction") });
       return false;
+    }
+    if (action === "pause") {
+      void (async () => {
+        const config = await loadConfig();
+        const now = new Date();
+        const curMins = minutesSinceMidnight(now, config.timeZone);
+        const bStart = timeValue(config.morningBreak.start);
+        const bEnd = timeValue(config.morningBreak.end);
+        if (curMins >= bStart - 60 && curMins <= bEnd + 30) {
+          const runtime = await loadRuntime();
+          runtime.breakDoneDate = getLocalDateString(now, config.timeZone);
+          await chrome.storage.local.set({ [STATE_KEY]: runtime });
+        }
+      })();
     }
     void loadConfig().then(config => new BizneoClient(config).performChrono(action))
       .then(chrono => sendResponse({ ok: true, chrono }))

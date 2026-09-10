@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { defaultConfig } from "../src/config.js";
-import { evaluateReminders } from "../src/reminders.js";
+import { evaluateReminders, getLocalDateString } from "../src/reminders.js";
 
 const madrid = (hour: number, minute: number): Date => new Date(Date.UTC(2026, 8, 7, hour - 2, minute));
 
@@ -23,6 +23,11 @@ describe("evaluateReminders", () => {
   it("reminds for the unfinished midday break", () => {
     const result = evaluateReminders(defaultConfig(), { status: "working", loggedMinutes: 240 }, madrid(14, 0));
     expect(result.map(item => item.rule)).toEqual(["morningBreak"]);
+  });
+
+  it("does not remind for midday break when already done today", () => {
+    const result = evaluateReminders(defaultConfig(), { status: "working", loggedMinutes: 240, breakDoneToday: true }, madrid(14, 0));
+    expect(result).toEqual([]);
   });
 
   it("uses a strict greater-than comparison for the pause threshold", () => {
@@ -94,5 +99,10 @@ describe("evaluateReminders", () => {
 
     const disabledConfig = { ...defaultConfig(), enabled: { ...defaultConfig().enabled, stoppedPending: false } };
     expect(evaluateReminders(disabledConfig, snapshot16, now)).toEqual([]);
+  });
+
+  it("formats local date string as YYYY-MM-DD", () => {
+    const d = new Date(Date.UTC(2026, 8, 10, 12, 0, 0));
+    expect(getLocalDateString(d, "Europe/Madrid")).toBe("2026-09-10");
   });
 });

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseChrono } from "../src/parser/chrono.js";
+import { parseChrono, parseBizneoDate } from "../src/parser/chrono.js";
 import { defaultConfig, validateConfig } from "../src/config.js";
 
 describe("parseChrono", () => {
@@ -80,5 +80,21 @@ describe("parseChrono", () => {
     expect(migrated.stoppedPendingMinutes).toBe(30);
     expect(migrated.enabled.maximumWork).toBe(true);
     expect(migrated.enabled.stoppedPending).toBe(true);
+  });
+
+  it("parses Bizneo date formats accurately", () => {
+    const d1 = parseBizneoDate("2026-9-7 17:47:26");
+    expect(d1?.getFullYear()).toBe(2026);
+    expect(d1?.getMonth()).toBe(8);
+    expect(d1?.getDate()).toBe(7);
+    expect(d1?.getHours()).toBe(17);
+    expect(d1?.getMinutes()).toBe(47);
+    expect(d1?.getSeconds()).toBe(26);
+
+    const d2 = parseBizneoDate("2026-09-07 08:00:00");
+    expect(d2?.getHours()).toBe(8);
+
+    expect(parseBizneoDate(undefined)).toBeUndefined();
+    expect(parseBizneoDate("invalid-date")).toBeUndefined();
   });
 });
