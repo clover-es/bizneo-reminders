@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { defaultConfig } from "../src/config.js";
-import { evaluateReminders, getLocalDateString } from "../src/reminders.js";
+import { evaluateReminders, getLocalDateString, getDayOfWeek } from "../src/reminders.js";
 
 const madrid = (hour: number, minute: number): Date => new Date(Date.UTC(2026, 8, 7, hour - 2, minute));
 
@@ -99,6 +99,35 @@ describe("evaluateReminders", () => {
 
     const disabledConfig = { ...defaultConfig(), enabled: { ...defaultConfig().enabled, stoppedPending: false } };
     expect(evaluateReminders(disabledConfig, snapshot16, now)).toEqual([]);
+  });
+
+  it("does not remind on weekends unless a shift is scheduled", () => {
+    const sat = (h: number, m: number) => new Date(Date.UTC(2026, 8, 12, h - 2, m));
+    const sun = (h: number, m: number) => new Date(Date.UTC(2026, 8, 13, h - 2, m));
+
+    // Saturday with no scheduled shift or 0 hours -> no reminder
+    expect(evaluateReminders(defaultConfig(), { status: "stopped", loggedMinutes: 0 }, sat(9, 0))).toEqual([]);
+    expect(evaluateReminders(defaultConfig(), { status: "stopped", loggedMinutes: 0, scheduledMinutes: 0 }, sat(9, 0))).toEqual([]);
+
+    // Sunday with no scheduled shift or 0 hours -> no reminder
+    expect(evaluateReminders(defaultConfig(), { status: "stopped", loggedMinutes: 0 }, sun(9, 0))).toEqual([]);
+    expect(evaluateReminders(defaultConfig(), { status: "stopped", loggedMinutes: 0, scheduledMinutes: 0 }, sun(9, 0))).toEqual([]);
+
+    // Weekend WITH scheduled work -> reminders should evaluate normally
+    const satWithShift = evaluateReminders(defaultConfig(), { status: "stopped", loggedMinutes: 0, scheduledMinutes: 240 }, sat(9, 0));
+    expect(satWithShift.map(item => item.rule)).toEqual(["morningStart"]);
+  });
+
+  it("calculates day of the week accurately respecting time zones", () => {
+    // 2026-09-07 is Monday, 2026-09-12 is Saturday, 2026-09-13 is Sunday
+    expect(getDayOfWeek(new Date(Date.UTC(2026, 8, 7, 12, 0)), "Europe/Madrid")).toBe(1); // Monday
+    expect(getDayOfWeek(new Date(Date.UTC(2026, 8, 12, 12, 0)), "Europe/Madrid")).toBe(6); // Saturday
+    expect(getDayOfWeek(new Date(Date.UTC(2026, 8, 13, 12, 0)), "Europe/Madrid")).toBe(0); // Sunday
+
+    // Boundary test: Sunday 23:30 UTC is Monday 01:30 in Europe/Madrid (+2 in summer)
+    const lateSundayUtc = new Date(Date.UTC(2026, 8, 13, 23, 30));
+    expect(getDayOfWeek(lateSundayUtc, "Europe/Madrid")).toBe(1); // Monday in Madrid
+    expect(getDayOfWeek(lateSundayUtc, "UTC")).toBe(0); // Sunday in UTC
   });
 
   it("formats local date string as YYYY-MM-DD", () => {

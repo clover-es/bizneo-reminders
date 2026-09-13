@@ -47,6 +47,14 @@ export function timeValue(time: string): number {
   return hour * 60 + minute;
 }
 
+export function getDayOfWeek(date: Date, timeZone: string): number {
+  const weekdayStr = new Intl.DateTimeFormat("en-US", { timeZone, weekday: "short" }).format(date);
+  const days: Record<string, number> = {
+    Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6
+  };
+  return days[weekdayStr] ?? date.getDay();
+}
+
 export function insideWindow(now: number, window: TimeWindow): boolean {
   const start = timeValue(window.start);
   const end = timeValue(window.end);
@@ -60,7 +68,13 @@ function formatHM(minutes: number): string {
 }
 
 export function evaluateReminders(config: ReminderConfig, snapshot: ReminderSnapshot, now: Date): ActiveReminder[] {
-  if (snapshot.isDayOff || (snapshot.scheduledMinutes !== undefined && snapshot.scheduledMinutes <= 0)) return [];
+  const dayOfWeek = getDayOfWeek(now, config.timeZone);
+  const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+  const hasScheduledWork = snapshot.scheduledMinutes !== undefined && snapshot.scheduledMinutes > 0;
+
+  if (snapshot.isDayOff || (snapshot.scheduledMinutes !== undefined && snapshot.scheduledMinutes <= 0) || (isWeekend && !hasScheduledWork)) {
+    return [];
+  }
   const currentMinutes = minutesSinceMidnight(now, config.timeZone);
   const reminders: ActiveReminder[] = [];
 

@@ -161,6 +161,7 @@ async function checkReminders(force = false): Promise<CheckResult> {
       loggedMinutes: chrono.loggedMinutes ?? 0,
       scheduledMinutes: chrono.scheduledMinutes,
       isExceeded: chrono.isExceeded,
+      isDayOff: chrono.isDayOff,
       pauseStartedAt: runtime.pauseStartedAt ? new Date(runtime.pauseStartedAt) : undefined,
       stoppedStartedAt: runtime.stoppedStartedAt ? new Date(runtime.stoppedStartedAt) : undefined,
       breakDoneToday

@@ -97,4 +97,39 @@ describe("parseChrono", () => {
     expect(parseBizneoDate(undefined)).toBeUndefined();
     expect(parseBizneoDate("invalid-date")).toBeUndefined();
   });
+
+  it("detects day-off and zero scheduled hours", () => {
+    const zeroHoursHtml = `
+      <div id="chronometer-wrapper"><form id="chrono-form-default_chrono" hx-post="/chrono">
+        <input name="_csrf_token" value="dummy_token"><input name="user_id" value="user_42">
+        <input name="shift_id" value="shift_123">
+        <div id="dropdown-tooltip"><dd>0:00</dd><dd>0:00</dd></div>
+      </form></div>`;
+    const zeroParsed = parseChrono(zeroHoursHtml);
+    expect(zeroParsed.status).toBe("stopped");
+    expect(zeroParsed.scheduledMinutes).toBe(0);
+    expect(zeroParsed.isDayOff).toBe(true);
+
+    const dashHoursHtml = `
+      <div id="chronometer-wrapper"><form id="chrono-form-default_chrono" hx-post="/chrono">
+        <input name="_csrf_token" value="dummy_token"><input name="user_id" value="user_42">
+        <div id="dropdown-tooltip"><dd>-</dd><dd>-</dd></div>
+      </form></div>`;
+    const dashParsed = parseChrono(dashHoursHtml);
+    expect(dashParsed.scheduledMinutes).toBe(0);
+    expect(dashParsed.isDayOff).toBe(true);
+
+    const noTimeExpectedHtml = `
+      <div id="chronometer-wrapper"><form id="chrono-form-hub_chrono" hx-post="/chrono">
+        <input name="_csrf_token" value="dummy_token"><input name="user_id" value="user_42">
+        <input type="hidden" name="shift_id" value="">
+        <div id="time-row"><span class="timer-time-hours-minutes">00:00</span></div>
+      </form></div>`;
+    const noTimeParsed = parseChrono(noTimeExpectedHtml);
+    expect(noTimeParsed.status).toBe("stopped");
+    expect(noTimeParsed.shiftId).toBeUndefined();
+    expect(noTimeParsed.scheduledMinutes).toBe(0);
+    expect(noTimeParsed.loggedMinutes).toBe(0);
+    expect(noTimeParsed.isDayOff).toBe(true);
+  });
 });
