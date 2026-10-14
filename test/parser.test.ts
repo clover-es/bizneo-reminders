@@ -119,17 +119,17 @@ describe("parseChrono", () => {
     expect(dashParsed.scheduledMinutes).toBe(0);
     expect(dashParsed.isDayOff).toBe(true);
 
-    const noTimeExpectedHtml = `
+    const stoppedChronoHtml = `
       <div id="chronometer-wrapper"><form id="chrono-form-hub_chrono" hx-post="/chrono">
         <input name="_csrf_token" value="dummy_token"><input name="user_id" value="user_42">
         <input type="hidden" name="shift_id" value="">
         <div id="time-row"><span class="timer-time-hours-minutes">00:00</span></div>
       </form></div>`;
-    const noTimeParsed = parseChrono(noTimeExpectedHtml);
-    expect(noTimeParsed.status).toBe("stopped");
-    expect(noTimeParsed.shiftId).toBeUndefined();
-    expect(noTimeParsed.scheduledMinutes).toBe(0);
-    expect(noTimeParsed.loggedMinutes).toBe(0);
-    expect(noTimeParsed.isDayOff).toBe(true);
+    const stoppedParsed = parseChrono(stoppedChronoHtml);
+    expect(stoppedParsed.status).toBe("stopped");
+    expect(stoppedParsed.shiftId).toBeUndefined();
+    expect(stoppedParsed.scheduledMinutes).toBeUndefined();
+    expect(stoppedParsed.loggedMinutes).toBe(0);
+    expect(stoppedParsed.isDayOff).toBeUndefined();
   });
 });

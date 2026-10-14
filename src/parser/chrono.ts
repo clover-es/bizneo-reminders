@@ -74,10 +74,7 @@ export function parseChrono(html: string): ParsedChrono {
   const loggedMatch = firstMatch(/<dt\b[^>]*>[^<]*(?:logged|registrad)[^<]*<\/dt>\s*<dd\b[^>]*>([\s\S]*?)<\/dd>/i, form);
 
   const rawScheduled = scheduledMatch ? stripTags(scheduledMatch) : dropdownValues[0];
-  let scheduledMinutes = parseHM(rawScheduled);
-  if (scheduledMinutes === undefined && !shiftId && dropdownValues.length === 0) {
-    scheduledMinutes = 0;
-  }
+  const scheduledMinutes = parseHM(rawScheduled);
 
   const loggedMinutes = parseHM(loggedMatch ? stripTags(loggedMatch) : dropdownValues[1])
     ?? parseHM(firstMatch(/<div\b[^>]*class=["'][^"']*\brow\b[^"']*\btime\b[^"']*["'][^>]*>[\s\S]*?<b[^>]*>([^<]+)<\/b>/i, form))
